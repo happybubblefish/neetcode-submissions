@@ -1,0 +1,54 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+
+class Solution {
+    Map<Integer, Integer> inMap = new HashMap<>();
+    Map<Integer, Integer> preMap = new HashMap<>();
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        int len = preorder.length;
+
+        for(int i = 0; i < len; i++) {
+            preMap.put(preorder[i], i);
+        }
+
+        for(int i = 0; i < len; i++) {
+            inMap.put(inorder[i], i);
+        }
+
+        return helper(preorder, 0, len - 1, inorder, 0, len - 1);
+    }
+
+    private TreeNode helper(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd) {
+        if(preStart > preorder.length - 1 || inStart > inorder.length - 1 || preStart > preEnd || inStart > inEnd) {
+            return null;
+        }
+
+        int rootVal = preorder[preStart];
+        TreeNode root = new TreeNode(rootVal);
+
+        int rootIndex = inMap.get(rootVal);
+        int leftSize = rootIndex - inStart;
+
+        TreeNode left = helper(preorder, preStart + 1, preStart + leftSize, inorder, inStart, rootIndex - 1);
+        TreeNode right = helper(preorder, preStart + leftSize + 1, preEnd, inorder, rootIndex + 1, inEnd);
+
+        root.left = left;
+        root.right = right;
+
+        return root;
+    }
+}
